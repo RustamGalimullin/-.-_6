@@ -1,106 +1,47 @@
+#задача 1
+
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
-%matplotlib inline
-
-zp=np.array([35, 45, 190, 200, 40, 70, 54, 150, 120, 110])
-ks=np.array([401, 574, 874, 919, 459, 739, 653, 902, 746, 832])
-
-def covar(array1, array2):
-    MXY=sum(array1*array2)/len(array1)
-    MX=sum(array1)/len(array1)
-    MY=sum(array2)/len(array2)
-    return MXY-MX*MY
-
-covar(zp,ks)
-
-"9157.839999999997"
-
-np.cov(zp, ks, ddof=0)
-
-"array([[ 3494.64,  9157.84],"
-"[ 9157.84, 30468.89]])"
-
-def sigma(array, offset=True):
-    mean_array=sum(array)/len(array)
-    square_dev=(array-mean_array)**2
-    variance=sum(square_dev)/len(array) if offset else sum(square_dev)/(len(array)-1)
-    return variance**0.5
-
-r=covar(zp, ks)/(sigma(zp)*sigma(ks))
-print(f'Коэффициент корреляции r = {r: .5f}')
-
-"Коэффициент корреляции r =  0.88749"
-
-r1=np.cov(zp, ks, ddof=1)/(sigma(zp, offset=False)*sigma(ks, offset=False))
-print(f'Коэффициент корреляции r = {r1}')
-
-"Коэффициент корреляции r = [[0.33866702 0.88749009]"
-"[0.88749009 2.95275283]]"
-
-np.corrcoef(zp,ks)
-
-"array([[1.        , 0.88749009],"
-"       [0.88749009, 1.        ]])"
-
-df=pd.DataFrame(data={'zp':zp, 'ks':ks})
-df
-
-"zp	ks"
-#0	35	401
-#1	45	574
-#2	190	874
-#3	200	919
-#4	40	459
-#5	70	739
-#6	54	653
-#7	150	902
-#8	120	746
-#9	110	832
-
-df.corr()
-
-
-"zp	ks"
-#zp	1.00000	0.88749
-#ks	0.88749	1.00000
-
-"Взаимосвязь между исходными данными сильная"
-
-"задача 2"
-
-arr=np.array([131, 125, 115, 122, 131, 115, 107, 99, 125, 111])
-print(f'Среднее выборочное: {np.mean(arr): .2f},\n'
-      f'Размер выборки n={len(arr)},\n'
-      f'Среднее квадратическое отклонение по выборке(несмещенное): {np.std(arr, ddof=1): .2f}.'
-     )
-
-#Среднее выборочное:  118.10,
-#Размер выборки n=10,
-#Среднее квадратическое отклонение по выборке(несмещенное):  10.55.
-
 import scipy.stats as stats
 
-def t_from_table(confidens, len_array):
-    alpha=(1-confidens)
-    return stats.t.ppf(1-alpha/2, len_array-1)
-print(f'Табличное значение t-критерия для 95%-го доверительного интервала данной выборки: {t_from_table(0.95, len(arr)): .3f}')
+l_border=80-1.96*16/256**0.5
+r_border=80+1.96*16/256**0.5
+print(f'>>> Доверительный интервал: [{l_border} ; {r_border}].')
 
-#Табличное значение t-критерия для 95%-го доверительного интервала данной выборки:  2.262
+"Ответ: Доверительный интервал: [78.04 ; 81.96]."
 
-def confidens_int(arr, confidens):
-    return round(np.mean(arr)-t_from_table(confidens,len(arr))*np.std(arr, ddof=1)/len(arr)**0.5,3), \
-           round(np.mean(arr)+t_from_table(confidens,len(arr))*np.std(arr, ddof=1)/len(arr)**0.5,3)
+#Задача 2
 
-print(f'95%-й доверительный интервал для истинного значения IQ: {confidens_int(arr, 0.95)}.')
 
-#95%-й доверительный интервал для истинного значения IQ: (110.556, 125.644).
+array = [6.9, 6.1, 6.2, 6.8, 7.5, 6.3, 6.4, 6.9, 6.7, 6.1]
+n = len(array)
+x = np.mean(array)
+print(f'>>> Среднее арифметическое для выборки: {x}')
+a = 0.05
+sigma = np.std(array, ddof=1)
+print(f'>>> Среднее квадратическое отклонение по выборке(несмещенное): {sigma}')
+stats = stats.t.ppf( 1-a/2, n-1)
+print(f'>>> Значение t-критерия для {1-a}% доверительного интервала: {stats}')
+l_border=x-stats*sigma/np.sqrt(n)
+r_border=x+stats*sigma/np.sqrt(n)
+print(f'>>> Доверительный интервал для величины "X" составляет: [{l_border:.3f} ; {r_border:.3f}]')
 
-"Задача 3"
+"Среднее арифметическое для выборки: 6.590000000000001"
+"Среднее квадратическое отклонение по выборке(несмещенное): 0.4508017549014448"
+"Значение t-критерия для 0.95% доверительного интервала: 2.2621571627409915"
+"Доверительный интервал для величины X составляет: [6.268 ; 6.912]"
 
-left=174.2-(1.96*25**0.5)/27**0.5
-right=174.2+(1.96*25**0.5)/27**0.5
-print(f'95%-й доверительный интервал для оценки мат. ожидания генеральной совокупности: [{left: .4f};{right: .4f}].')
+#Задача3
 
-#95%-й доверительный интервал для оценки мат. ожидания генеральной совокупности: [ 172.3140; 176.0860].
+mothers = np.array([178, 165, 165, 173, 168, 155, 160, 164, 178, 175])
+daughters = np.array([175, 167, 154, 174, 178, 148, 160, 167, 169, 170])
+
+difference_of_means = np.mean(mothers) - np.mean(daughters)
+standard_error = np.sqrt(np.var(mothers, ddof=1)/len(mothers) + np.var(daughters, ddof=1)/len(daughters))
+t_critical = stats.t.ppf(0.975, len(mothers) + len(daughters) - 2)
+l_border = difference_of_means - t_critical * standard_error
+r_border = difference_of_means + t_critical * standard_error
+
+print(f'>>> 95% доверительный интервал для разности среднего роста родителей и детей: [{l_border:.2f}, {r_border:.2f}]')
+
+"Ответ: 95% доверительный интервал для разности среднего роста родителей и детей: [-6.27, 10.07]"
+
